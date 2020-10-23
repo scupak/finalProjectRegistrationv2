@@ -264,5 +264,75 @@ namespace XUnitTestProject
         }
 
         #endregion
+
+                       #region RemoveStudent
+
+        [Fact]
+        public void RemoveStudent_ExistingStudent()
+        {
+           // arrange
+            Student student = new Student()
+            {
+                Id = 1,
+                Name = "name",
+                Address = "address",
+                ZipCode = 1234,
+                PostalDistrict = "postalDistrict",
+                Email = "email"
+            };
+
+            // make sure the student exists before test
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(z => z == student.Id))).Returns(() => student);
+
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act
+            service.RemoveStudent(student);
+
+            // assert
+            repoMock.Verify(repo => repo.Remove(It.Is<Student>(s => s == student)), Times.Once);
+        }
+
+        [Fact]
+        public void RemoveStudent_StudentIsNull_ExpectArgumentException()
+        {
+            // arrange
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.RemoveStudent(null));
+
+            Assert.Equal("Student is missing", ex.Message);
+            repoMock.Verify(repo => repo.Remove(It.Is<Student>(s => s == null)), Times.Never);
+        }
+
+        [Fact]
+        public void RemoveStudent_NonExistingStudent_ExpectInvalidOperationException()
+        {
+          // arrange
+            Student student = new Student()
+            {
+                Id = 1,
+                Name = "name",
+                Address = "address",
+                ZipCode = 1234,
+                PostalDistrict = "postalDistrict",
+                Email = "email"
+            };
+
+            // make sure the student does not exist before test
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(z => z == student.Id))).Returns(() => null);
+
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<InvalidOperationException>(() => service.RemoveStudent(student));
+
+            // assert
+            Assert.Equal("Attempt to remove non-existing student", ex.Message);
+            repoMock.Verify(repo => repo.Remove(It.Is<Student>(s => s == student)), Times.Never);
+        }
+
+        #endregion
      }
 }

@@ -55,5 +55,18 @@ namespace Services
             ThrowIfNotValidStudent(student);
             repo.Update(student);
         }
+       
+        public void RemoveStudent(Student student)
+        {
+            if (student == null)
+            {
+                throw new ArgumentException("Student is missing");
+            }
+            if (repo.GetById(student.Id) == null)
+            {
+                throw new InvalidOperationException("Attempt to remove non-existing student");
+            }
+            repo.Remove(student);
+        }
     }
 }
