@@ -75,5 +75,10 @@ namespace Services
         {
             return repo.GetAll();
         }
+
+        public Student GetStudentById(int id)
+        {
+            return repo.GetById(id);
+        }
     }
 }

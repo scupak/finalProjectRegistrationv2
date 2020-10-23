@@ -350,7 +350,7 @@ namespace XUnitTestProject
                 new Student() { Id = 2}
             };
 
-            repoMock.Setup(x => x.GetAll()).Returns(() => data.GetRange(0,listCount));
+            repoMock.Setup(x => x.GetAll()).Returns(() => data.GetRange(0, listCount));
 
             StudentService service = new StudentService(repoMock.Object);
 
@@ -358,9 +358,61 @@ namespace XUnitTestProject
             var result = service.GetAllStudents();
 
             // assert
-            Assert.Equal(data.GetRange(0,listCount), result);
+            Assert.Equal(data.GetRange(0, listCount), result);
             repoMock.Verify(repo => repo.GetAll(), Times.Once);
         }
+        #endregion
+
+        #region GetStudentById
+
+        [Fact]
+        public void GetStudentById_existingStudent()
+        {
+            // arrange
+            int id = 1;
+
+            Student student = new Student()
+            {
+                Id = 1,
+                Name = "name",
+                Address = "address",
+                ZipCode = 1234,
+                PostalDistrict = "postalDistrict",
+                Email = "email"
+            };
+
+            // make sure the student exists before test
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(z => z == student.Id))).Returns(() => student);
+
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act
+            var result = service.GetStudentById(id);
+
+            // assert
+            Assert.Equal(student, result);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(x => x == id)), Times.Once);
+        }
+
+        [Fact]
+        public void GetStudentById_NonExistingStudent_ExpectNull()
+        {
+            // arrange
+            int id = 1;
+
+            // make sure the student does not exist before test
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(z => z == id))).Returns(() => null);
+
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act
+            var result = service.GetStudentById(id);
+
+            // assert
+            Assert.Null(result);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(x => x == id)), Times.Once);
+        }
+
         #endregion
     }
 }
