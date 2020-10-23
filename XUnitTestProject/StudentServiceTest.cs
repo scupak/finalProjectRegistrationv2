@@ -55,7 +55,7 @@ namespace XUnitTestProject
         [Theory]
         [InlineData(1, "Name", "Address", 1234, "PostalDistrict", "e@mail.dk")]
         [InlineData(1, "Name", "Address", 1234, "PostalDistrict", null)]
-        public void AddStudent_ValidStudentNonExisting(int id, string name, string address, int zipcode, string postalDistrict, string email)
+        public void AddStudent_ValidNonExistingStudent(int id, string name, string address, int zipcode, string postalDistrict, string email)
         {
             // arrange
             Student student = new Student()
@@ -159,7 +159,96 @@ namespace XUnitTestProject
 
         #region UpdateStudent
 
+        [Theory]
+        [InlineData(1, "Name", "Address", 1234, "PostalDistrict", "e@mail.dk")]
+        [InlineData(1, "Name", "Address", 1234, "PostalDistrict", null)]
+        public void UpdateStudent_ValidExistingStudent(int id, string name, string address, int zipcode, string postalDistrict, string email)
+        {
+            // arrange
+            Student student = new Student()
+            {
+                Id = id,
+                Name = name,
+                Address = address,
+                ZipCode = zipcode,
+                PostalDistrict = postalDistrict,
+                Email = email
+            };
 
+            // make sure the student exists before test
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(z => z == student.Id))).Returns(() => student);
+
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act
+            service.UpdateStudent(student);
+
+            // assert
+            repoMock.Verify(repo => repo.Update(It.Is<Student>(s => s == student)), Times.Once);
+        }
+
+        [Fact]
+        public void UpdateStudent_NonExistingStudent_ExpectInvalidOperationException()
+        {
+           // arrange
+            Student student = new Student()
+            {
+                Id = 1,
+                Name = "name",
+                Address = "address",
+                ZipCode = 1234,
+                PostalDistrict = "postalDistrict",
+                Email = "email"
+            };
+
+            // make sure the student does not exist before test
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(z => z == student.Id))).Returns(() => null);
+
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<InvalidOperationException>(() => service.UpdateStudent(student));
+
+            Assert.Equal("Update of non-existing student", ex.Message);
+            repoMock.Verify(repo => repo.Update(It.Is<Student>(s => s == student)), Times.Never);
+        }
+
+        [Theory]
+        [InlineData(0, "Name", "Address", 1234, "PostalDistrict", "e@mail.dk", "Id")]     // invalid Id = 0
+        [InlineData(-1, "Name", "Address", 1234, "PostalDistrict", "e@mail.dk", "Id")]    // invalid Id = -1
+        [InlineData(1, null, "Address", 1234, "PostalDistrict", "e@mail.dk", "Name")]     // Name is null
+        [InlineData(1, "", "Address", 1234, "PostalDistrict", "e@mail.dk", "Name")]       // Name is empty
+        [InlineData(1, "Name", null, 1234, "PostalDistrict", "e@mail.dk", "Address")]     // Address is null
+        [InlineData(1, "Name", "", 1234, "PostalDistrict", "e@mail.dk", "Address")]       // Address is empty
+        [InlineData(1, "Name", "Address", 0, "PostalDistrict", "e@mail.dk", "ZipCode")]   // invalid ZipCode = 0
+        [InlineData(1, "Name", "Address", -1, "PostalDistrict", "e@mail.dk", "ZipCode")]  // invalid ZipCode = -1
+        [InlineData(1, "Name", "Address", 1234, null, "e@mail.dk", "PostalDistrict")]     // PostalDistrict is null
+        [InlineData(1, "Name", "Address", 1234, "", "e@mail.dk", "PostalDistrict")]       // PostalDistrict is empty
+        [InlineData(1, "Name", "Address", 1234, "PostalDistrict", "", "Email")]           // Email is empty
+        public void UpdateStudent_InvalidStudent_ExpectArgumentException(int id, string name, string address, int zipcode, string postalDistrict, string email, string field)
+        {
+            // arrange
+            Student student = new Student()
+            {
+                Id = id,
+                Name = name,
+                Address = address,
+                ZipCode = zipcode,
+                PostalDistrict = postalDistrict,
+                Email = email
+            };
+
+            // make sure the student exists before test
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(z => z == student.Id))).Returns(() => student);
+
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.UpdateStudent(student));
+
+            Assert.Equal($"Invalid Student Property: {field}", ex.Message);
+            repoMock.Verify(repo => repo.Update(It.Is<Student>(s => s == student)), Times.Never);
+        }
 
         #endregion
     }

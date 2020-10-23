@@ -40,5 +40,16 @@ namespace Services
             if (student.Email == "")
                 throw new ArgumentException("Invalid Student Property: Email");
         }
+
+        public void UpdateStudent(Student student)
+        {
+            if (repo.GetById(student.Id) == null)
+            {
+                throw new InvalidOperationException("Update of non-existing student");
+            }
+
+            ThrowIfNotValidStudent(student);
+            repo.Update(student);
+        }
     }
 }
