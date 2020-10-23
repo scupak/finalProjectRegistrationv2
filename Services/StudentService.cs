@@ -1,6 +1,8 @@
 ﻿using Interfaces;
 using Model;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Services
 {
@@ -67,6 +69,11 @@ namespace Services
                 throw new InvalidOperationException("Attempt to remove non-existing student");
             }
             repo.Remove(student);
+        }
+
+        public IEnumerable<Student> GetAllStudents()
+        {
+            return repo.GetAll();
         }
     }
 }

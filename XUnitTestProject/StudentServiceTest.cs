@@ -3,6 +3,7 @@ using Model;
 using Moq;
 using Services;
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using Xunit;
 
@@ -203,7 +204,7 @@ namespace XUnitTestProject
         [Fact]
         public void UpdateStudent_NonExistingStudent_ExpectInvalidOperationException()
         {
-           // arrange
+            // arrange
             Student student = new Student()
             {
                 Id = 1,
@@ -265,12 +266,12 @@ namespace XUnitTestProject
 
         #endregion
 
-                       #region RemoveStudent
+        #region RemoveStudent
 
         [Fact]
         public void RemoveStudent_ExistingStudent()
         {
-           // arrange
+            // arrange
             Student student = new Student()
             {
                 Id = 1,
@@ -309,7 +310,7 @@ namespace XUnitTestProject
         [Fact]
         public void RemoveStudent_NonExistingStudent_ExpectInvalidOperationException()
         {
-          // arrange
+            // arrange
             Student student = new Student()
             {
                 Id = 1,
@@ -334,5 +335,32 @@ namespace XUnitTestProject
         }
 
         #endregion
-     }
+
+        #region GetAllStudents
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void GetAllStudents(int listCount)
+        {
+            // arrange
+            var data = new List<Student>()
+            {
+                new Student() { Id = 1},
+                new Student() { Id = 2}
+            };
+
+            repoMock.Setup(x => x.GetAll()).Returns(() => data.GetRange(0,listCount));
+
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act
+            var result = service.GetAllStudents();
+
+            // assert
+            Assert.Equal(data.GetRange(0,listCount), result);
+            repoMock.Verify(repo => repo.GetAll(), Times.Once);
+        }
+        #endregion
+    }
 }
