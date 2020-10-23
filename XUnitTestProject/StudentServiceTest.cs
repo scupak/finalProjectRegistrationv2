@@ -188,6 +188,19 @@ namespace XUnitTestProject
         }
 
         [Fact]
+        public void UpdateStudent_StudentIsNull_ExpectArgumentException()
+        {
+            // arrange
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.UpdateStudent(null));
+
+            Assert.Equal("Student is missing", ex.Message);
+            repoMock.Verify(repo => repo.Update(It.Is<Student>(s => s == null)), Times.Never);
+        }
+
+        [Fact]
         public void UpdateStudent_NonExistingStudent_ExpectInvalidOperationException()
         {
            // arrange
@@ -251,5 +264,5 @@ namespace XUnitTestProject
         }
 
         #endregion
-    }
+     }
 }

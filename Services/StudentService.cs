@@ -43,6 +43,10 @@ namespace Services
 
         public void UpdateStudent(Student student)
         {
+            if (student == null)
+            {
+                throw new ArgumentException("Student is missing");
+            }
             if (repo.GetById(student.Id) == null)
             {
                 throw new InvalidOperationException("Update of non-existing student");
