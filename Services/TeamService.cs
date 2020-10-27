@@ -41,5 +41,22 @@ namespace Services
                 throw new ArgumentException("Invalid Students property");
             }
         }
+
+        public void UpdateTeam(Team team)
+        {
+            if (team == null)
+            {
+                throw new ArgumentException("Team is missing");
+            }
+
+            ValidateTeam(team);
+
+            if (repo.GetById(team.Id) == null)
+            {
+                throw new InvalidOperationException("Team does not exist in the Team Repository");
+            }
+
+            repo.Update(team);
+        }
     }
 }
