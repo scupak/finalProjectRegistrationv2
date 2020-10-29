@@ -246,5 +246,64 @@ namespace XUnitTestProject
         }
 
         #endregion
+        
+        #region RemoveTeam
+
+        [Fact]
+        public void RemoveTeam_TeamExists()
+        {
+            // arrange
+            Team team = new Team()
+            {
+                Id = 1
+            };
+
+            // Team team exists in the TeamRepository
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(id => id == team.Id))).Returns(() => team);
+
+            TeamService service = new TeamService(repoMock.Object);
+
+            // act
+            service.RemoveTeam(team);
+
+            // assert
+            repoMock.Verify(repo => repo.Remove(It.Is<Team>( t => t == team)), Times.Once);
+        }
+
+        [Fact]
+        public void RemoveTeam_TeamDoesNotExist_ExpectInvalidOperationException()
+        {
+            // arrange
+            Team team = new Team()
+            {
+                Id = 1
+            };
+
+            // Team team does not exist in the TeamRepository
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(id => id == team.Id))).Returns(() => null);
+
+            TeamService service = new TeamService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<InvalidOperationException>(() => service.RemoveTeam(team));
+
+            Assert.Equal("Team does not exist", ex.Message);
+            repoMock.Verify(repo => repo.Remove(It.Is<Team>( t => t == team)), Times.Never);
+        }
+
+        [Fact]
+        public void RemoveTeam_TeamIsNull_ExpectArgumentException()
+        {
+            // arrange
+            TeamService service = new TeamService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.RemoveTeam(null));
+
+            Assert.Equal("Team is missing", ex.Message);
+            repoMock.Verify(repo => repo.Remove(It.Is<Team>( t => t == null)), Times.Never);
+        }
+
+        #endregion
     }
 }

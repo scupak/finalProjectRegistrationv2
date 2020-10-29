@@ -58,5 +58,17 @@ namespace Services
 
             repo.Update(team);
         }
+        public void RemoveTeam(Team team)
+        {
+            if (team == null)
+            {
+                throw new ArgumentException("Team is missing");
+            }
+            if (repo.GetById(team.Id) == null)
+            {
+                throw new InvalidOperationException("Team does not exist");
+            }
+            repo.Remove(team);
+        }
     }
 }
