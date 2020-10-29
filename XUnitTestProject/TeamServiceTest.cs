@@ -305,5 +305,58 @@ namespace XUnitTestProject
         }
 
         #endregion
+
+        #region GetTeamById
+
+        [Fact]
+        public void GetTeamById_TeamExists()
+        {
+            // arrange
+            var teamId = 1;
+
+            var team = new Team()
+            { 
+                Id = teamId
+            };
+
+            // Team with teamId is in the TeamRepository
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(id => id == teamId))).Returns(() => team);
+
+            var service = new TeamService(repoMock.Object);
+
+            // act
+            var result = service.GetTeamById(teamId);
+
+            // assert
+            Assert.NotNull(result);
+            Assert.Equal(result, team);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(id => id == teamId)), Times.Once);
+        }
+
+        [Fact]
+        public void GetTeamById_TeamDoesNotExists_ExpectNull()
+        {
+            // arrange
+            var teamId = 1;
+
+            var team = new Team()
+            { 
+                Id = teamId
+            };
+
+            // Team with teamId is in the TeamRepository
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(id => id == teamId))).Returns(() => null);
+
+            var service = new TeamService(repoMock.Object);
+
+            // act
+            var result = service.GetTeamById(teamId);
+
+            // assert
+            Assert.Null(result);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(id => id == teamId)), Times.Once);
+        }
+
+        #endregion
     }
 }
