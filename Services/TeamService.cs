@@ -75,5 +75,10 @@ namespace Services
         {
             return repo.GetById(teamId);
         }
+
+        public IEnumerable<Team> GetAllTeams()
+        {
+            return repo.GetAll();
+        }
     }
 }
