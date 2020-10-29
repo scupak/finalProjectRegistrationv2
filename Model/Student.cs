@@ -10,5 +10,15 @@ namespace Model
         public int ZipCode { get; set; }
         public string PostalDistrict { get; set; }
         public string Email { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (! (obj is Student))
+            {
+                return false;
+            }
+            var student = (Student) obj;
+            return (this.Id == student.Id);
+        }
     }
 }
