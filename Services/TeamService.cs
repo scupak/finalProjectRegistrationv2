@@ -70,5 +70,10 @@ namespace Services
             }
             repo.Remove(team);
         }
+
+        public object GetTeamById(int teamId)
+        {
+            return repo.GetById(teamId);
+        }
     }
 }
