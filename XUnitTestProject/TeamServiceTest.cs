@@ -225,8 +225,8 @@ namespace XUnitTestProject
             Assert.Equal("Invalid Team Id", ex.Message);
             repoMock.Verify(repo => repo.Update(It.Is<Team>(team => team == t)), Times.Never);
         }
-        
-       [Fact]
+
+        [Fact]
         public void UpdateTeam_InvalidStudentsList_ExpectArgumentException()
         {
             // arrange
@@ -246,7 +246,7 @@ namespace XUnitTestProject
         }
 
         #endregion
-        
+
         #region RemoveTeam
 
         [Fact]
@@ -267,7 +267,7 @@ namespace XUnitTestProject
             service.RemoveTeam(team);
 
             // assert
-            repoMock.Verify(repo => repo.Remove(It.Is<Team>( t => t == team)), Times.Once);
+            repoMock.Verify(repo => repo.Remove(It.Is<Team>(t => t == team)), Times.Once);
         }
 
         [Fact]
@@ -288,7 +288,7 @@ namespace XUnitTestProject
             var ex = Assert.Throws<InvalidOperationException>(() => service.RemoveTeam(team));
 
             Assert.Equal("Team does not exist", ex.Message);
-            repoMock.Verify(repo => repo.Remove(It.Is<Team>( t => t == team)), Times.Never);
+            repoMock.Verify(repo => repo.Remove(It.Is<Team>(t => t == team)), Times.Never);
         }
 
         [Fact]
@@ -301,7 +301,7 @@ namespace XUnitTestProject
             var ex = Assert.Throws<ArgumentException>(() => service.RemoveTeam(null));
 
             Assert.Equal("Team is missing", ex.Message);
-            repoMock.Verify(repo => repo.Remove(It.Is<Team>( t => t == null)), Times.Never);
+            repoMock.Verify(repo => repo.Remove(It.Is<Team>(t => t == null)), Times.Never);
         }
 
         #endregion
@@ -315,7 +315,7 @@ namespace XUnitTestProject
             var teamId = 1;
 
             var team = new Team()
-            { 
+            {
                 Id = teamId
             };
 
@@ -340,7 +340,7 @@ namespace XUnitTestProject
             var teamId = 1;
 
             var team = new Team()
-            { 
+            {
                 Id = teamId
             };
 
@@ -355,6 +355,39 @@ namespace XUnitTestProject
             // assert
             Assert.Null(result);
             repoMock.Verify(repo => repo.GetById(It.Is<int>(id => id == teamId)), Times.Once);
+        }
+
+        #endregion
+
+        #region GetAllTeams
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void GetAllTeams(int teamCount)
+        {
+            // arrange
+            var allTeams = new List<Team>()
+            {
+                new Team(){ Id = 1},
+                new Team(){ Id = 2},
+                new Team(){ Id = 3}
+            };
+
+            var teams = allTeams.GetRange(0, teamCount);
+
+            // The repository returns the number of teams stated by the teamCount
+            repoMock.Setup(repo => repo.GetAll()).Returns(() => teams.ToArray());
+
+            var service = new TeamService(repoMock.Object);
+
+            // act
+            var result = service.GetAllTeams();
+
+            // assert
+            Assert.Equal(teams, result);
+            repoMock.Verify(repo => repo.GetAll(), Times.Once);
         }
 
         #endregion
