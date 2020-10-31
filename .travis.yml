@@ -14,5 +14,4 @@ before_script:
   sudo snap alias dotnet-sdk.dotnet dotnet
 
 script:
-  - dotnet build
   - dotnet test
