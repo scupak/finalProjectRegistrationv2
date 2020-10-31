@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Model
+﻿namespace Model
 {
     public class Student
     {
@@ -19,6 +17,11 @@ namespace Model
             }
             var student = (Student) obj;
             return (this.Id == student.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
     }
 }
