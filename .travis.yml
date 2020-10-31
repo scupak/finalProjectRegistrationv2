@@ -10,8 +10,8 @@ language: csharp
 mono: none
 solution: FinalProjectRegistration.sln
 
-before_script:
-  sudo snap alias dotnet-sdk.dotnet dotnet
+
 
 script:
+  - dotnet build
   - dotnet test
