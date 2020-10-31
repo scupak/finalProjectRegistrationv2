@@ -1,5 +1,6 @@
 sudo: required
 dist: xenial
+
 addons:
   snaps:
     - name: dotnet-sdk
@@ -10,7 +11,8 @@ language: csharp
 mono: none
 solution: FinalProjectRegistration.sln
 
-
+before_script:
+  sudo snap alias dotnet-sdk.dotnet dotnet
 
 script:
   - dotnet build
