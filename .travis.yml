@@ -7,7 +7,7 @@ solution: FinalProjectRegistration.sln
 addons:
   snaps:
     - name: dotnet-sdk
-    - channel: stable
+    - channel: 3.1
 
 before_script:
   sudo snap alias dotnet-sdk.dotnet dotnet
