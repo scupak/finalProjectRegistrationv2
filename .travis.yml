@@ -6,7 +6,7 @@ solution: FinalProjectRegistration.sln
 
 addons:
   snaps:
-    - sudo snap install dotnet-sdk --channel=lts/stable --classic
+    - dotnet-sdk --channel=lts/stable --classic
 
 before_script:
   - sudo snap alias dotnet-sdk.dotnet dotnet
