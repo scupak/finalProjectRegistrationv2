@@ -4,8 +4,11 @@ language: csharp
 mono: none
 solution: FinalProjectRegistration.sln
 
+addons:
+  snaps:
+    - sudo snap install dotnet-sdk --channel=lts/stable --classic
+
 before_script:
-  - sudo snap install dotnet-sdk --channel=lts/stable --classic
   - sudo snap alias dotnet-sdk.dotnet dotnet
 
 
