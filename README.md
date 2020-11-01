@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.org/bhp-SDM/finalProjectRegistrationv2.svg?branch=develop)](https://travis-ci.org/bhp-SDM/finalProjectRegistrationv2)
