@@ -66,5 +66,58 @@ namespace Services
             }
             return false;
         }
+
+        public void MoveStudentToNewTeam(Team fromTeam, Team toTeam, Student student)
+        {
+            if (fromTeam == null)
+            {
+                throw new ArgumentException("From Team is missing");
+            }
+            if (toTeam == null)
+            {
+                throw new ArgumentException("To Team is missing");
+            }
+            if (student == null)
+            {
+                throw new ArgumentException("Student is missing");
+            }
+
+            var fetchedFromTeam = TeamsRepo.GetById(fromTeam.Id);
+
+            if (fetchedFromTeam == null)
+            {
+                throw new InvalidOperationException("From Team not found");
+            }
+
+            var fetchedToTeam = TeamsRepo.GetById(toTeam.Id);
+
+            if (fetchedToTeam == null)
+            {
+                throw new InvalidOperationException("To Team not found");
+            }
+
+            if (fetchedToTeam.Students.Count == MAX_STUDENTS)
+            {
+                throw new InvalidOperationException("To Team is full");
+            }
+
+            var fetchedStudent = StudentsRepo.GetById(student.Id);
+
+            if (fetchedStudent == null)
+            {
+                throw new InvalidOperationException("Student not found");
+            }
+
+            if (! fetchedFromTeam.Students.Contains(fetchedStudent))
+            {
+                throw new InvalidOperationException("Student is not a member of From Team");
+            }
+
+            fetchedFromTeam.Students.Remove(fetchedStudent);
+            fetchedToTeam.Students.Add(fetchedStudent);
+
+            TeamsRepo.Update(fetchedFromTeam);
+            TeamsRepo.Update(fetchedToTeam);
+        }
     }
 }
