@@ -1,6 +1,8 @@
 ﻿using Interfaces;
 using Model;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Services
 {
@@ -152,6 +154,16 @@ namespace Services
 
             fetchedTeam.Students.Remove(fetchedStudent);
             TeamsRepo.Update(fetchedTeam);
+        }
+
+        public IEnumerable<Student> GetNonAssignedStudents()
+        {
+            var assignedStudents = new List<Student>();
+            foreach (var team in TeamsRepo.GetAll())
+            { 
+                assignedStudents.AddRange(team.Students);
+            }
+            return StudentsRepo.GetAll().ToList().Except(assignedStudents);
         }
     }
 }
