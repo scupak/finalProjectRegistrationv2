@@ -119,5 +119,39 @@ namespace Services
             TeamsRepo.Update(fetchedFromTeam);
             TeamsRepo.Update(fetchedToTeam);
         }
+
+        public void RemoveStudentFromTeam(Team team, Student student)
+        {
+            if (team == null)
+            {
+                throw new ArgumentException("Team is missing");
+            }
+            if (student == null)
+            {
+                throw new ArgumentException("Student is missing");
+            }
+
+            var fetchedTeam = TeamsRepo.GetById(team.Id);
+
+            if (fetchedTeam == null)
+            {
+                throw new InvalidOperationException("Team not found");
+            }
+
+            var fetchedStudent = StudentsRepo.GetById(student.Id);
+
+            if (fetchedStudent == null)
+            {
+                throw new InvalidOperationException("Student not found");
+            }
+
+            if (! fetchedTeam.Students.Contains(fetchedStudent))
+            {
+                throw new InvalidOperationException("Student is not a member of the team");
+            }
+
+            fetchedTeam.Students.Remove(fetchedStudent);
+            TeamsRepo.Update(fetchedTeam);
+        }
     }
 }

@@ -640,5 +640,191 @@ namespace XUnitTestProject
 
 
         #endregion
+
+        #region RemoveStudentFromTeam
+
+        [Fact]
+        public void RemoveStudentFromTeam_LegalRemove()
+        {
+            // arrange
+            var studentRepo = studentRepoMock.Object;
+            var teamRepo = teamRepoMock.Object;
+
+            // student s exists
+            var s = new Student() { Id = 1 };
+            studentRepo.Add(s);
+
+            // team t exists with student s as a member
+            var t = new Team() { Id = 1, Students = new List<Student>() { s } };
+            teamRepo.Add(t);
+
+            var studentsBeforeTest = new List<Student>(studentRepo.GetAll());
+            var teamsBeforeTest = new List<Team>(teamRepo.GetAll());
+
+            var service = new StudentTeamService(studentRepo, teamRepo);
+
+            // act
+            service.RemoveStudentFromTeam(t, s);
+
+            // assert
+            Assert.True(!teamRepo.GetById(t.Id).Students.Contains(s));
+            teamRepoMock.Verify(repo => repo.Update(It.Is<Team>(team => team == t)), Times.Once);
+
+            // verify that repositories contains same objects as before act.
+            Assert.Equal(studentsBeforeTest, studentRepoMock.Object.GetAll());
+            Assert.Equal(teamsBeforeTest, teamRepoMock.Object.GetAll());
+        }
+
+        [Fact]
+        public void RemoveStudentFromTeam_TeamIsNull_ExpectArgumentException()
+        {
+            // arrange
+            var studentRepo = studentRepoMock.Object;
+            var teamRepo = teamRepoMock.Object;
+
+            // student s exists
+            var s = new Student() { Id = 1 };
+            studentRepo.Add(s);
+
+            var studentsBeforeTest = new List<Student>(studentRepo.GetAll());
+            var teamsBeforeTest = new List<Team>(teamRepo.GetAll());
+
+            var service = new StudentTeamService(studentRepo, teamRepo);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.RemoveStudentFromTeam(null, s));
+
+            // assert
+            Assert.Equal("Team is missing", ex.Message);
+            teamRepoMock.Verify(repo => repo.Update(It.Is<Team>(team => team == null)), Times.Never);
+
+            // verify that repositories contains same objects as before act.
+            Assert.Equal(studentsBeforeTest, studentRepoMock.Object.GetAll());
+            Assert.Equal(teamsBeforeTest, teamRepoMock.Object.GetAll());
+        }
+
+        [Fact]
+        public void RemoveStudentFromTeam_StudentIsNull_ExpectArgumentException()
+        {
+            // arrange
+            var studentRepo = studentRepoMock.Object;
+            var teamRepo = teamRepoMock.Object;
+
+            // team t exists
+            var t = new Team() { Id = 1, Students = new List<Student>() };
+            teamRepo.Add(t);
+
+            var studentsBeforeTest = new List<Student>(studentRepo.GetAll());
+            var teamsBeforeTest = new List<Team>(teamRepo.GetAll());
+
+            var service = new StudentTeamService(studentRepo, teamRepo);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.RemoveStudentFromTeam(t, null));
+
+            // assert
+            Assert.Equal("Student is missing", ex.Message);
+            teamRepoMock.Verify(repo => repo.Update(It.Is<Team>(team => team == t)), Times.Never);
+
+            // verify that repositories contains same objects as before act.
+            Assert.Equal(studentsBeforeTest, studentRepoMock.Object.GetAll());
+            Assert.Equal(teamsBeforeTest, teamRepoMock.Object.GetAll());
+        }
+
+        [Fact]
+        public void RemoveStudentFromTeam_TeamDoesNotExist_ExpectInvalidOperationException()
+        {
+            // arrange
+            var studentRepo = studentRepoMock.Object;
+            var teamRepo = teamRepoMock.Object;
+
+            // student s exists
+            var s = new Student() { Id = 1 };
+            studentRepo.Add(s);
+
+            // team t does not exist
+            var t = new Team() { Id = 1, Students = new List<Student>() };
+
+            var studentsBeforeTest = new List<Student>(studentRepo.GetAll());
+            var teamsBeforeTest = new List<Team>(teamRepo.GetAll());
+
+            var service = new StudentTeamService(studentRepo, teamRepo);
+
+            // act + assert
+            var ex = Assert.Throws<InvalidOperationException>(() => service.RemoveStudentFromTeam(t, s));
+
+            // assert
+            Assert.Equal("Team not found", ex.Message);
+            teamRepoMock.Verify(repo => repo.Update(It.Is<Team>(team => team == t)), Times.Never);
+
+            // verify that repositories contains same objects as before act.
+            Assert.Equal(studentsBeforeTest, studentRepoMock.Object.GetAll());
+            Assert.Equal(teamsBeforeTest, teamRepoMock.Object.GetAll());
+        }
+
+        [Fact]
+        public void RemoveStudentFromTeam_StudentDoesNotExist_ExpectInvalidOperationException()
+        {
+            // arrange
+            var studentRepo = studentRepoMock.Object;
+            var teamRepo = teamRepoMock.Object;
+
+            // student s does not exist
+            var s = new Student() { Id = 1 };
+
+            // team t exists
+            var t = new Team() { Id = 1, Students = new List<Student>() };
+            teamRepo.Add(t);
+
+            var studentsBeforeTest = new List<Student>(studentRepo.GetAll());
+            var teamsBeforeTest = new List<Team>(teamRepo.GetAll());
+
+            var service = new StudentTeamService(studentRepo, teamRepo);
+
+            // act + assert
+            var ex = Assert.Throws<InvalidOperationException>(() => service.RemoveStudentFromTeam(t, s));
+
+            // assert
+            Assert.Equal("Student not found", ex.Message);
+            teamRepoMock.Verify(repo => repo.Update(It.Is<Team>(team => team == t)), Times.Never);
+
+            // verify that repositories contains same objects as before act.
+            Assert.Equal(studentsBeforeTest, studentRepoMock.Object.GetAll());
+            Assert.Equal(teamsBeforeTest, teamRepoMock.Object.GetAll());
+        }
+
+        [Fact]
+        public void RemoveStudentFromTeam_StudentNotMemberOfTeam_ExpectInvalidOperationException()
+        {
+            // arrange
+            var studentRepo = studentRepoMock.Object;
+            var teamRepo = teamRepoMock.Object;
+
+            // student s exists
+            var s = new Student() { Id = 1 };
+            studentRepo.Add(s);
+
+            // team t exists, but student s is not a member
+            var t = new Team() { Id = 1, Students = new List<Student>() };
+            teamRepo.Add(t);
+
+            var studentsBeforeTest = new List<Student>(studentRepo.GetAll());
+            var teamsBeforeTest = new List<Team>(teamRepo.GetAll());
+
+            var service = new StudentTeamService(studentRepo, teamRepo);
+
+            // act + assert
+            var ex = Assert.Throws<InvalidOperationException>(() => service.RemoveStudentFromTeam(t, s));
+
+            // assert
+            Assert.Equal("Student is not a member of the team", ex.Message);
+            teamRepoMock.Verify(repo => repo.Update(It.Is<Team>(team => team == t)), Times.Never);
+
+            // verify that repositories contains same objects as before act.
+            Assert.Equal(studentsBeforeTest, studentRepoMock.Object.GetAll());
+            Assert.Equal(teamsBeforeTest, teamRepoMock.Object.GetAll());
+        }
+
+        #endregion
     }
 }
