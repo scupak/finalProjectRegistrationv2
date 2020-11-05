@@ -829,45 +829,45 @@ namespace XUnitTestProject
 
         #region GetNonAssignedStudents
 
-        [Theory]
-        [InlineData(2)]         // non-assignedStudents Ids = {}
-        [InlineData(1)]         // non-assignedStudents Ids = {2}
-        [InlineData(0)]         // non-assignedStudents Ids = {1, 2}
-        public void GetNonAssignedStudents(int assignedStudentsCount)
-        {
-            // arrange
-            var studentRepo = studentRepoMock.Object;
-            var teamRepo = teamRepoMock.Object;
+        //[Theory]
+        //[InlineData(2)]         // non-assignedStudents Ids = {}
+        //[InlineData(1)]         // non-assignedStudents Ids = {2}
+        //[InlineData(0)]         // non-assignedStudents Ids = {1, 2}
+        //public void GetNonAssignedStudents(int assignedStudentsCount)
+        //{
+        //    // arrange
+        //    var studentRepo = studentRepoMock.Object;
+        //    var teamRepo = teamRepoMock.Object;
 
-            // two students exists
-            var s1 = new Student() { Id = 1 };
-            var s2 = new Student() { Id = 2 };
-            studentRepo.Add(s1);
-            studentRepo.Add(s2);
+        //    // two students exists
+        //    var s1 = new Student() { Id = 1 };
+        //    var s2 = new Student() { Id = 2 };
+        //    studentRepo.Add(s1);
+        //    studentRepo.Add(s2);
 
-            var allStudents = studentRepo.GetAll().ToList();
-            var assignedStudents = allStudents.GetRange(0, assignedStudentsCount);
-            var expectedResult = allStudents.Except(assignedStudents);
+        //    var allStudents = studentRepo.GetAll().ToList();
+        //    var assignedStudents = allStudents.GetRange(0, assignedStudentsCount);
+        //    var expectedResult = allStudents.Except(assignedStudents);
 
-            // team t exists with student s1 as a member
-            var t = new Team() { Id = 1, Students = assignedStudents};
-            teamRepo.Add(t);
+        //    // team t exists with student s1 as a member
+        //    var t = new Team() { Id = 1, Students = assignedStudents};
+        //    teamRepo.Add(t);
 
-            var studentsBeforeTest = new List<Student>(studentRepo.GetAll());
-            var teamsBeforeTest = new List<Team>(teamRepo.GetAll());
+        //    var studentsBeforeTest = new List<Student>(studentRepo.GetAll());
+        //    var teamsBeforeTest = new List<Team>(teamRepo.GetAll());
 
-            var service = new StudentTeamService(studentRepo, teamRepo);
+        //    var service = new StudentTeamService(studentRepo, teamRepo);
 
-            // act
-            IEnumerable<Student> result = service.GetNonAssignedStudents();
+        //    // act
+        //    IEnumerable<Student> result = service.GetNonAssignedStudents();
 
-            // assert
-            Assert.Equal(expectedResult, result.ToList());
+        //    // assert
+        //    Assert.Equal(expectedResult, result.ToList());
 
-            // verify that repositories contains same objects as before act.
-            Assert.Equal(studentsBeforeTest, studentRepoMock.Object.GetAll());
-            Assert.Equal(teamsBeforeTest, teamRepoMock.Object.GetAll());
-        }
+        //    // verify that repositories contains same objects as before act.
+        //    Assert.Equal(studentsBeforeTest, studentRepoMock.Object.GetAll());
+        //    Assert.Equal(teamsBeforeTest, teamRepoMock.Object.GetAll());
+        //}
 
         #endregion
     }
