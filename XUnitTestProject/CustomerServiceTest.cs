@@ -14,6 +14,8 @@ namespace XUnitTestProject
         private SortedDictionary<int, Customer> allCustomers;
         private Mock<ICustomerRepository> repoMock;
 
+        #region CreateCustomerService
+
         public CustomerServiceTest()
         {
             allCustomers = new SortedDictionary<int, Customer>();
@@ -49,5 +51,8 @@ namespace XUnitTestProject
 
             Assert.Equal("Customer Repository is missing", ex.Message);
         }
+
+        #endregion
+
     }
 }
