@@ -156,14 +156,14 @@ namespace Services
             TeamsRepo.Update(fetchedTeam);
         }
 
-        public IEnumerable<Student> GetNonAssignedStudents()
-        {
-            var assignedStudents = new List<Student>();
-            foreach (var team in TeamsRepo.GetAll())
-            { 
-                assignedStudents.AddRange(team.Students);
-            }
-            return StudentsRepo.GetAll().ToList().Except(assignedStudents);
-        }
+        //public IEnumerable<Student> GetNonAssignedStudents()
+        //{
+        //    var assignedStudents = new List<Student>();
+        //    foreach (var team in TeamsRepo.GetAll())
+        //    { 
+        //        assignedStudents.AddRange(team.Students);
+        //    }
+        //    return StudentsRepo.GetAll().ToList().Except(assignedStudents);
+        //}
     }
 }
