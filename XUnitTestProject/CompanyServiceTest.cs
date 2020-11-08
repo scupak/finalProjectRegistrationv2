@@ -14,8 +14,6 @@ namespace XUnitTestProject
         private SortedDictionary<int, Company> allCompanies;
         private Mock<ICompanyRepository> repoMock;
 
-        #region CreateCompanyService
-
         public CompanyServiceTest()
         {
             allCompanies = new SortedDictionary<int, Company>();
@@ -26,6 +24,8 @@ namespace XUnitTestProject
             repoMock.Setup(repo => repo.GetAll()).Returns(() => allCompanies.Values);
             repoMock.Setup(repo => repo.GetById(It.IsAny<int>())).Returns<int>((id) => allCompanies.ContainsKey(id) ? allCompanies[id] : null);
         }
+
+        #region CreateCompanyService
 
         [Fact]
         public void CreateCompanyService_ValidCompanyRepository()
@@ -54,7 +54,7 @@ namespace XUnitTestProject
 
         #endregion
 
-         #region AddCompany
+        #region AddCompany
 
         [Theory]
         [InlineData(1, "Company", "Address", 1234, "District", "uri")]
@@ -159,6 +159,117 @@ namespace XUnitTestProject
 
             Assert.Equal("Company already exists", ex.Message);
             repoMock.Verify(repo => repo.Add(It.Is<Company>(c => c == Company)), Times.Never);
+        }
+
+        #endregion
+
+        #region UpdateCompany
+
+        [Theory]
+        [InlineData(1, "Company", "Address", 1234, "District", "uri")]
+        [InlineData(1, "Company", "Address", 1234, "District", null)]
+        public void UpdateCompany_ValidExistingCompany(int id, string name, string address, int zipcode, string postalDistrict, string url)
+        {
+            // arrange
+            var company = new Company()
+            {
+                Id = id,
+                Name = name,
+                Address = address,
+                Zipcode = zipcode,
+                PostalDistrict = postalDistrict,
+                CompanyUri = url,
+                Projects = new List<Project>()
+            };
+
+            // company is valid and exists in company repository
+            allCompanies.Add(company.Id, company);
+
+            var service = new CompanyService(repoMock.Object);
+
+            // act
+            service.UpdateCompany(company);
+
+            // assert
+            Assert.Equal(repoMock.Object.GetById(company.Id), company);
+            repoMock.Verify(repo => repo.Update(It.Is<Company>(c => c == company)), Times.Once);
+        }
+
+
+        [Theory]
+        [InlineData(0, "Company", "Address", 1234, "District", "uri")]      // invalid id: 0
+        [InlineData(-1, "Company", "Address", 1234, "District", "uri")]     // invalid id: -1
+        [InlineData(1, null, "Address", 1234, "District", "uri")]           // invalid name: null
+        [InlineData(1, "", "Address", 1234, "District", "uri")]             // invalid name: ""
+        [InlineData(1, "Company", null, 1234, "District", "uri")]           // invalid address: null
+        [InlineData(1, "Company", "", 1234, "District", "uri")]             // invalid address: ""
+        [InlineData(1, "Company", "Address", 0, "District", "uri")]         // invalid zipcode: 0
+        [InlineData(1, "Company", "Address", -1, "District", "uri")]        // invalid zipcode: -1
+        [InlineData(1, "Company", "Address", 1234, null, "uri")]            // invalid PostalDistrict: null
+        [InlineData(1, "Company", "Address", 1234, "", "uri")]              // invalid PostalDistrict: ""
+        [InlineData(1, "Company", "Address", 1234, "District", "")]         // invaild CompanyUri: ""
+        public void UpdateCompany_InvalidCompany_ExpectArgumentException(int id, string name, string address, int zipcode, string district, string uri)
+        {
+            // arrange
+            var Company = new Company()
+            {
+                Id = id,
+                Name = name,
+                Address = address,
+                Zipcode = zipcode,
+                PostalDistrict = district,
+                CompanyUri = uri,
+                Projects = new List<Project>()
+            };
+
+            CompanyService service = new CompanyService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.UpdateCompany(Company));
+
+            Assert.Equal("Invalid Company property", ex.Message);
+            repoMock.Verify(repo => repo.Update(It.Is<Company>(c => c == Company)), Times.Never);
+        }
+
+        [Fact]
+        public void UpdateCompany_CompanyIsNUll_ExpectArgumentException()
+        {
+            // arrange
+            CompanyService service = new CompanyService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.UpdateCompany(null));
+
+            Assert.Equal("Company is missing", ex.Message);
+            repoMock.Verify(repo => repo.Update(It.Is<Company>(c => c == null)), Times.Never);
+        }
+
+        [Fact]
+        public void UpdateCompany_CompanyDoesNotExist_InvalidOperationException()
+        {
+            // arrange
+            
+            var repo = repoMock.Object;
+
+            // Company does not exist in Company repository
+            var Company = new Company()
+            {
+                Id = 1,
+                Name = "Company",
+                Address = "Address",
+                Zipcode = 1234,
+                PostalDistrict = "District",
+                CompanyUri = "companyUrl",
+                Projects = new List<Project>()
+            };
+
+            var service = new CompanyService(repo);
+
+            // act + assert
+            var ex = Assert.Throws<InvalidOperationException>(() => service.UpdateCompany(Company));
+
+            Assert.Equal("Company does not exist", ex.Message);
+            repoMock.Verify(repo => repo.Update(It.Is<Company>(c => c == Company)), Times.Never);
         }
 
         #endregion
