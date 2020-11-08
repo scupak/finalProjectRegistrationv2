@@ -60,5 +60,18 @@ namespace Services
 
             companyRepository.Update(company);
         }
+
+        public void RemoveCompany(Company company)
+        {
+            if (company == null)
+            {
+                throw new ArgumentException("Company is missing");
+            }
+            if (companyRepository.GetById(company.Id) == null)
+            {
+                throw new InvalidOperationException("Company does not exist");
+            }
+            companyRepository.Remove(company);
+        }
     }
 }

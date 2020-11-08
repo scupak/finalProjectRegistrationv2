@@ -273,6 +273,79 @@ namespace XUnitTestProject
         }
 
         #endregion
+       
+        #region RemoveCompany
 
+        [Fact]
+        public void RemoveCompany_ValidExistingCompany()
+        {
+            // arrange
+
+            // company exists in Company Repository before test
+            var company = new Company()
+            {
+                Id = 1,
+                Name = "name",
+                Address = "address",
+                Zipcode = 1234,
+                PostalDistrict = "postalDistrict",
+                CompanyUri = "url",
+                Projects = new List<Project>()
+            };
+            allCompanies.Add(company.Id, company);
+
+            var service = new CompanyService(repoMock.Object);
+
+            // act
+            service.RemoveCompany(company);
+
+            // assert
+            Assert.Null(repoMock.Object.GetById(company.Id));
+            repoMock.Verify(repo => repo.Remove(It.Is<Company>(c => c.Id == company.Id)), Times.Once);
+        }
+
+        [Fact]
+        public void RemoveCompany_CompanyDoesNotExist_ExpectInvalidOperationException()
+        {
+            // arrange
+
+            // company does not exist in Company Repository before test
+            var company = new Company()
+            {
+                Id = 1,
+                Name = "name",
+                Address = "address",
+                Zipcode = 1234,
+                PostalDistrict = "postalDistrict",
+                CompanyUri = "url",
+                Projects = new List<Project>()
+            };
+
+            var service = new CompanyService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<InvalidOperationException>(() => service.RemoveCompany(company));
+
+            // assert
+            Assert.Equal("Company does not exist", ex.Message);
+            repoMock.Verify(repo => repo.Remove(It.Is<Company>(c => c.Id == company.Id)), Times.Never);
+        }
+
+        [Fact]
+        public void RemoveCompany_CompanyIsNull_ExpectArgumentException()
+        {
+            // arrange
+
+            var service = new CompanyService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.RemoveCompany(null));
+
+            // assert
+            Assert.Equal("Company is missing", ex.Message);
+            repoMock.Verify(repo => repo.Remove(It.Is<Company>(c => c == null)), Times.Never);
+        }
+
+        #endregion
     }
 }
