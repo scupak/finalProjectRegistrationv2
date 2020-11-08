@@ -42,5 +42,23 @@ namespace Services
                 || c.CompanyUri == ""
                 || c.Projects == null);
         }
+
+        public void UpdateCompany(Company company)
+        {
+            if (company == null)
+            {
+                throw new ArgumentException("Company is missing");
+            }
+            if (!IsValidCompany(company))
+            {
+                throw new ArgumentException("Invalid Company property");
+            }
+            if (companyRepository.GetById(company.Id) == null)
+            {
+                throw new InvalidOperationException("Company does not exist");
+            }
+
+            companyRepository.Update(company);
+        }
     }
 }
