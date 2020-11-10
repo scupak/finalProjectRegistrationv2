@@ -1,4 +1,5 @@
 ﻿using Interfaces;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
 using Model;
 using Moq;
 using Services;
@@ -346,6 +347,120 @@ namespace XUnitTestProject
             repoMock.Verify(repo => repo.Remove(It.Is<Company>(c => c == null)), Times.Never);
         }
 
+        #endregion
+
+        #region GetCompanyById
+
+        [Fact]
+        public void GetCompanyById_CompanyExists()
+        {
+            // arrange
+            
+            // company c1 exists in the Company repository
+            var c1 = new Company() {Id = 1};
+            allCompanies.Add(c1.Id, c1);
+
+            var service = new CompanyService(repoMock.Object);
+
+            // act
+            var result = service.GetCompanyById(c1.Id);
+
+            // assert
+            Assert.Equal(c1, result);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(id => id == c1.Id)), Times.Once);
+        }
+
+        [Fact]
+        public void GetCompanyById_CompanyDoesNotExist_ExpectNull()
+        {
+            // arrange
+            var c1 = new Company(){Id = 1};
+            var c2 = new Company(){Id = 2};
+
+            // only c2 exists in the company repository
+            allCompanies.Add(c2.Id, c2);
+
+            var service = new CompanyService(repoMock.Object);
+
+            // act
+            var result = service.GetCompanyById(c1.Id);
+
+            // assert
+            Assert.Null(result);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(id => id == c1.Id)), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void GetCompanyById_InvalidId_ExpectArgumentException(int id)
+        {
+            // arrange
+            var service = new CompanyService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.GetCompanyById(id));
+
+            Assert.Equal("Invalid Company id", ex.Message);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(x => x == id)), Times.Never);
+        }
+        #endregion
+
+        #region GetCompanyById
+
+        [Fact]
+        public void GetCompanyById_CompanyExists()
+        {
+            // arrange
+            
+            // company c1 exists in the Company repository
+            var c1 = new Company() {Id = 1};
+            allCompanies.Add(c1.Id, c1);
+
+            var service = new CompanyService(repoMock.Object);
+
+            // act
+            var result = service.GetCompanyById(c1.Id);
+
+            // assert
+            Assert.Equal(c1, result);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(id => id == c1.Id)), Times.Once);
+        }
+
+        [Fact]
+        public void GetCompanyById_CompanyDoesNotExist_ExpectNull()
+        {
+            // arrange
+            var c1 = new Company(){Id = 1};
+            var c2 = new Company(){Id = 2};
+
+            // only c2 exists in the company repository
+            allCompanies.Add(c2.Id, c2);
+
+            var service = new CompanyService(repoMock.Object);
+
+            // act
+            var result = service.GetCompanyById(c1.Id);
+
+            // assert
+            Assert.Null(result);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(id => id == c1.Id)), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void GetCompanyById_InvalidId_ExpectArgumentException(int id)
+        {
+            // arrange
+            var service = new CompanyService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<ArgumentException>(() => service.GetCompanyById(id));
+
+            Assert.Equal("Invalid Company id", ex.Message);
+            repoMock.Verify(repo => repo.GetById(It.Is<int>(x => x == id)), Times.Never);
+        }
         #endregion
 
         #region GetAllCompanies
