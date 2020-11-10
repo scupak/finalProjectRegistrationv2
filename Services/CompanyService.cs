@@ -1,6 +1,8 @@
 ﻿using Interfaces;
 using Model;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Services
 {
@@ -72,6 +74,11 @@ namespace Services
                 throw new InvalidOperationException("Company does not exist");
             }
             companyRepository.Remove(company);
+        }
+
+        public IEnumerable<Company> GetAllCompanies()
+        {
+            return companyRepository.GetAll();
         }
     }
 }
