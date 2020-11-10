@@ -347,5 +347,37 @@ namespace XUnitTestProject
         }
 
         #endregion
+
+        #region GetAllCompanies
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void GetAllCompanies(int companyCount)
+        {
+            // arrange
+            Company c1 = new Company(){ Id = 1};
+            Company c2 = new Company(){ Id = 2}; 
+            var companies = new List<Company>(){ c1, c2};
+
+            // the companies in the repository
+            var expected = companies.GetRange(0,companyCount);
+            foreach (var c in expected)
+            { 
+                allCompanies.Add(c.Id, c);
+            }
+
+            var service = new CompanyService(repoMock.Object);
+
+            // act
+            var result = service.GetAllCompanies();
+
+            // assert
+            Assert.Equal(expected, result);
+            repoMock.Verify(repo => repo.GetAll(), Times.Once);
+        }
+
+        #endregion
     }
 }
