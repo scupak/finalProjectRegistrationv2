@@ -1,7 +1,6 @@
 ﻿using Interfaces;
 using Model;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Services
@@ -80,15 +79,6 @@ namespace Services
         public IEnumerable<Company> GetAllCompanies()
         {
             return companyRepository.GetAll();
-        }
-
-        public object GetCompanyById(int id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentException("Invalid Company id");
-            }
-            return companyRepository.GetById(id);
         }
 
         public object GetCompanyById(int id)
