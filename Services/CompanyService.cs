@@ -81,7 +81,7 @@ namespace Services
             return companyRepository.GetAll();
         }
 
-        public object GetCompanyById(int id)
+        public Company GetCompanyById(int id)
         {
             if (id <= 0)
             {
