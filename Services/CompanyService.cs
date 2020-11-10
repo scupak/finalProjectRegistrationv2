@@ -73,5 +73,14 @@ namespace Services
             }
             companyRepository.Remove(company);
         }
+
+        public object GetCompanyById(int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Invalid Company id");
+            }
+            return companyRepository.GetById(id);
+        }
     }
 }
