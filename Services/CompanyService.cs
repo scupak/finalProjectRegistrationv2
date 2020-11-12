@@ -75,11 +75,10 @@ namespace Services
             companyRepository.Remove(company);
         }
 
-
-        //public IEnumerable<Company> GetAllCompanies()
-        //{
-        //    return companyRepository.GetAll();
-        //}
+        public IEnumerable<Company> GetAllCompanies()
+        {
+            return companyRepository.GetAll();
+        }
 
         public Company GetCompanyById(int id)
         {
